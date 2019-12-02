@@ -12,6 +12,7 @@ public class Vertice{
 	//3-coordenadas na tela
 	private double x[]={0, 0, 0, 0}, y[]={0, 0, 0, 0}, z[]={0, 0, 0, 0}, l[]={1, 1, 1, 1};
 	private Anima animacao;
+	private Cor cor;
 	public Vertice(double x, double y, double z, double l){
 		this.x[CoordinateSystem.SRO.ind]=this.x[CoordinateSystem.CENA.ind]=x;
 		this.y[CoordinateSystem.SRO.ind]=this.y[CoordinateSystem.CENA.ind]=y;
@@ -33,6 +34,12 @@ public class Vertice{
 		this.y[tm.ind]=array[1];
 		this.z[tm.ind]=array[2];
 		this.l[tm.ind]=array[3];
+	}
+	public void setCor(Cor c){
+		this.cor=c;
+	}
+	public Cor getCor(){
+		return this.cor;
 	}
 	public void transforma(Matrix m, CoordinateSystem inMode, CoordinateSystem outMode, Matrix.MultiplyOrder mO){
 		double out[], in[] = this.verticeToArray(inMode);
@@ -68,29 +75,6 @@ public class Vertice{
 			out[i]/=out[3];
 		this.writeArray(out, outMode);
 	}
-	/*
-	public void transforma(Matrix m, CoordinateSystem inMode, CoordinateSystem outMode, Matrix.MultiplyOrder mO, Matrix bound){
-		double out[], in[] = this.verticeToArray(inMode);
-		if(mO==Matrix.MultiplyOrder.PRE){
-			out = bound.preMultiply(in);
-			out = m.preMultiply(out);
-			bound = CriaMatriz.Translada(-bound.valores[0][3], -bound.valores[1][3], -bound.valores[2][3]);
-			//System.out.println(bound.valores[3][0]+", "+bound.valores[3][1]+", "+bound.valores[3][2]);
-			out = bound.preMultiply(out);
-		}
-		else{
-			//bound.print();
-			out = bound.posMultiply(in);
-			out = m.posMultiply(out);
-			bound = CriaMatriz.Translada(-bound.valores[3][0], -bound.valores[3][1], -bound.valores[3][2]);
-			//bound.print();
-			out = bound.posMultiply(out);
-		}
-		//dividindo todos por l(fator de escala da homogenea)
-		for(int i=0;i<4;i++)
-			out[i]/=out[3];
-		this.writeArray(out, outMode);
-	}*/
 	public void mudaAnimacao(double duracao, Matrix transformacao, Matrix centraliza, Matrix volta){
 		double out[] = new double[4];
 		//centraliza.print();

@@ -43,6 +43,10 @@ public class Cor{
 	}
 	void somaL(double n){
 		this.l+=n;
+		if(this.l<0)
+			this.l=0;
+		if(this.l>100)
+			this.l=100;
 		this.LABToRGB();
 	}
 	void RGBToLAB() {
@@ -80,75 +84,7 @@ public class Cor{
 	    this.green = (255 * ( (green > 0.0031308) ? 1.055 * (Math.pow(green, (1/2.4)) - 0.055) : green * 12.92 ));
 	    this.blue = (255 * ( (blue > 0.0031308) ? 1.055 * (Math.pow(blue, (1/2.4)) - 0.055) : blue * 12.92 ));
 	}
-	/*double normaliza(double comp){
-		comp/=255.0;
-		if (comp > 0.04045) 
-			return  100.0*Math.pow(( comp + 0.055 )/1.055, 2.4);
-	    else
-	    	return (comp/12.92)*100.0;
-	}
-	void rgbToXYZ(){
-		double red = normaliza(this.red);
-		double green =normaliza(this.green);
-		double blue = normaliza(this.blue);
-		this.x = red*0.4124 + green*0.3576 + blue*0.1805;
-	    this.y = red*0.2126 + green*0.7152 + blue*0.0722;
-	    this.z = red* 0.0193 + green*0.1192 + blue*0.9505;
-	    System.out.println("in:"+this.red+" "+this.blue+" "+this.z);
-	    System.out.println("in: "+this.x+" "+this.y+" "+this.z);
-	}
-	double f(double t){
-		if(t>Math.pow(this.SIGMA,3.0)) 
-			return Math.pow(t,1/3.0);
-		else 
-			return t/(3.0*this.SIGMA*this.SIGMA)+(4.0/29.0);
-	}
-	double fInv(double t){
-		if(t>this.SIGMA)
-			return t*t*t;
-		else
-			return 3*this.SIGMA*this.SIGMA*(t-4.0/29.0);
-	}
-	void XYZToLAB(){
-		this.l=116.0*f(this.y/this.Yn)-16;
-		this.a=500.0*(f(this.x/this.Xn)-f(this.y/this.Yn));
-		this.b=200.0*(f(this.y/this.Yn)-f(this.z/this.Zn));
-	}
-	double bound(double x, double min, double max){
-		if(max<min)
-			return x;
-		if(x>max)
-			return max;
-		else if(x<min)
-			return min;
-		else
-			return x;
-	}
-	void LABToXYZ(){
-		this.x=this.Xn*fInv((this.l+16.0)/116.0+this.a/500.0);
-		this.y=this.Yn*fInv((this.l+16.0)/116.0);
-		this.z=this.Zn*fInv((this.l+16.0)/116.0-this.b/200.0);
-		
-		this.x=bound(this.x,0,1);
-		this.y=bound(this.y,0,1);
-		this.z=bound(this.z,0,1);
-		
-		System.out.println("f: "+this.l+" "+this.a+" "+this.b);
-		System.out.println("f: "+this.x+" "+this.y+" "+this.z);
-	}
-	double normalizaInv(double c) {
-	  if (Math.abs(c) < 0.0031308) {
-	    return 12.92 * c;
-	  }
-	  return 1.055 * Math.pow(c, 0.41666) - 0.055;
-	}
-	void XYZToRGB(){
-		this.red =  3.2404542*this.x - 1.5371385*this.y - 0.4985314*this.z;
-		this.green = -0.9692660*this.x + 1.8760108*this.y + 0.0415560*this.z;
-		this.blue =  0.0556434*this.x - 0.2040259*this.y + 1.0572252*this.z;
-		this.red = normalizaInv(this.red);
-		this.green = normalizaInv(this.green);
-		this.blue = normalizaInv(this.blue);
-	}
-	*/
+	public Cor copia(){
+		return new Cor(this.l,this.a,this.b,this.alpha);
+	}	
 }

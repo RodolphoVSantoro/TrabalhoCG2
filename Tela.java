@@ -22,7 +22,7 @@ class Tela extends JPanel{
     Tela() {
         this.cena = new Cena(LARGURATELA, ALTURATELA);
         this.animationTimer = new Timer();
-        this.idPrisma = cena.adicionaObjeto("objetos/prisma.3dwf");
+        this.idPrisma = cena.adicionaObjeto("objetos/prisma.3dwf", new Cor(new Color(0,100,10,255)));
         kf = new Matrix[10];
         String name = "transformacoes/prisma";
         for(int i=0;i<10;i++){

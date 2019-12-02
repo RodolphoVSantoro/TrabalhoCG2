@@ -4,10 +4,13 @@ import java.awt.*;
 
 public class Cena{
 	private ArrayList<Objeto> objetos;
+	private Visibilidade visivibilidade;
+	private Shade shade;
 	private Matrix escalaTela;
 	private Matrix perspectiva;
 	private Matrix normaliza;
 	private int larguraTela, alturaTela;
+	private double observador[] = {0,0,100};
 	public Cena(int larguraTela, int alturaTela){
 		this.objetos = new ArrayList<Objeto>();
 		this.larguraTela = larguraTela;
@@ -17,10 +20,13 @@ public class Cena{
 		this.perspectiva = CriaMatriz.Perspectiva(60, 80, 50);
 		this.normaliza = CriaMatriz.Normaliza(40.0,40.0);
 		//this.normaliza = CriaMatriz.Escala(1.0/60.0, 1/60.0, 0);
+		//X,Y e Z do observador no SRU
+		this.visivibilidade = new Visibilidade(observador[0], observador[1], observador[2]);
+		this.shade = new Shade(observador[0], observador[1], observador[2]);
 	}
 	//retorna id do objeto
-	public int adicionaObjeto(String fname){
-		Objeto o = new Objeto(fname);
+	public int adicionaObjeto(String fname, Cor corBase){
+		Objeto o = new Objeto(fname, corBase);
 		this.objetos.add(o);
 		return objetos.size()-1;
 	}
@@ -48,14 +54,17 @@ public class Cena{
 		return obj.endedAnimacao(t);
 	}
 
-	public void desenha(Graphics g){
+	public void desenha(Graphics2D g2d){
 		Iterator<Objeto> objetoIterator = objetos.iterator();
 		while(objetoIterator.hasNext()){
 			Objeto objeto = objetoIterator.next();
+			//objeto.backFaceCulling();
+			int ordem[] = objeto.painter(this.observador);
+			objeto.ilumina(this.observador);
 			objeto.transforma(perspectiva, Vertice.CoordinateSystem.CENA, Vertice.CoordinateSystem.NORMAL);
 			objeto.transforma(normaliza, Vertice.CoordinateSystem.NORMAL, Vertice.CoordinateSystem.NORMAL);
 			objeto.transforma(escalaTela, Vertice.CoordinateSystem.NORMAL, Vertice.CoordinateSystem.TELA);
-			objeto.desenha(g);
+			objeto.desenha(g2d, ordem);
 		}
 	}
 }
