@@ -1,6 +1,3 @@
-import java.util.ArrayList;
-import java.util.Iterator;
-
 public class Anima{
 	private double duracao;
 	private double start;

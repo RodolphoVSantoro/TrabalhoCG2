@@ -1,19 +1,15 @@
-import java.awt.*;
 import java.util.ArrayList;
 import java.awt.Color;
 import java.awt.Polygon;
 import java.awt.GradientPaint;
+import java.awt.Graphics2D;
 
 public class Face{
-	//guarda indice que referencia
-	//vertice na arraylist do objeto
 	private int indVertice[];
 	private Boolean visibilidade;
 	public Face(int iV[]){
 		this.visibilidade=true;
-		indVertice = new int[iV.length];
-		for(int i=0; i<iV.length; i++)
-			indVertice[i]=iV[i];
+		indVertice = iV.clone();
 	}
 	public int nVertices(){
 		return this.indVertice.length;
@@ -63,8 +59,8 @@ public class Face{
 		double produto=0;
 		double c[] = this.getCentroide(vertices);
 		for(int i=0;i<3;i++)
-			produto+=normal[i]*c[i];
-		if(produto < 0)
+			produto-=normal[i]*c[i];
+		if(produto > 0)
 			this.visibilidade=false;
 		else
 			this.visibilidade=true;
@@ -91,15 +87,17 @@ public class Face{
 		mG/=nVertices;
 		mB/=nVertices;
 		mA/=nVertices;
-		Color transparente = new Color((int)mR,(int)mG,(int)mB,(int)mA);
+		Color meio = new Color((int)mR,(int)mG,(int)mB,(int)mA);
 		for(int i=0;i<nVertices;i++){
 			Vertice v = vertices.get(indVertice[i]);
+			Vertice v2 = vertices.get(indVertice[(i+1)%nVertices]);
 			Cor cor = v.getCor();
 			Color c = new Color(cor.getRed(),cor.getGreen(),cor.getBlue(),cor.getAlpha());
 			GradientPaint p = new GradientPaint(
-	            (float)centroX, (float)centroY, transparente,
+	            (float)centroX, (float)centroY, meio,
 	            v.getX(), v.getY(), c
             );
+
             g.setPaint(p);
             g.fillPolygon(face);
 		}

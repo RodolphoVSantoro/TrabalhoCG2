@@ -1,6 +1,5 @@
 public class CriaMatriz{
 	private CriaMatriz(){}
-	//As matrizes criadas abaixo pos multiplicam vetores
 	static public Matrix Identidade(){
 		Matrix m = new Matrix();
 		double mat[][] =
@@ -56,11 +55,9 @@ public class CriaMatriz{
 	static public Matrix Tela(int larguraTela, int alturaTela){
 		Matrix m1 = CriaMatriz.Escala(1,-1,1);
 		Matrix m2 = CriaMatriz.Escala(larguraTela, alturaTela, 0);
-		//Matrix m3 = CriaMatriz.Translada(0, alturaTela, 0);
 		Matrix m3 = CriaMatriz.Translada(0, alturaTela, 0);
 		m1=m1.preMultiply(m2);
 		m1=m1.preMultiply(m3);
-		//m1.print();
 		return m1;
 	}
 	static public Matrix Perspectiva(double xc, double yc, double zc){
@@ -79,7 +76,6 @@ public class CriaMatriz{
 			{0, 0, 0, 1}
 		};
 		Matrix m = new Matrix(mat);
-		//m.print();
 		return m;
 	}
 	static public Matrix Translada(double x, double y, double z){
@@ -92,9 +88,6 @@ public class CriaMatriz{
 		};
 		return new Matrix(mat);
 	}
-	/*transforma um sistema que varia de 
-	-limXY até limXY em um sistema de 0 a 1 em XY
-	*/
 	static public Matrix Normaliza(double limX, double limY){
 		Matrix m1 = CriaMatriz.Translada(limX, limY, 0);
 		Matrix m2 = CriaMatriz.Escala(1.0/limX, 1.0/limY, 0);

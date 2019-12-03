@@ -1,4 +1,4 @@
-import java.awt.*;
+import java.awt.Color;
 
 public class Cor{
 	final private double SIGMA = 6.0/29.0;

@@ -4,33 +4,46 @@ import java.io.File;
 import java.io.FileWriter;
 import java.util.Scanner;
 import java.io.IOException;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics2D;
 
 public class Objeto{
 	private ArrayList<Vertice> vertices;
+	private ArrayList<Curva> curvas;
 	private ArrayList<Face> faces;
 	private Cor corBase;
 	public Objeto(){
 		this.vertices = new ArrayList<Vertice>();
+		this.curvas = new ArrayList<Curva>();
 		this.faces = new ArrayList<Face>();
 	}
-	public Objeto(ArrayList<Vertice> v, ArrayList<Face> f){
-		this.vertices = v;
-		this.faces = f;
+	public Objeto(ArrayList<Vertice> v, ArrayList<Face> f, ArrayList<Curva> c){
+		this.vertices=v;
+		this.faces=f;
+		this.curvas=c;
+	}
+	public Objeto(String fname){
+		this(fname,new Cor(new Color(0,0,0,255)));
 	}
 	public Objeto(String fname, Cor corBase){
 		int h=0;
 		this.vertices = new ArrayList<Vertice>();
 		this.faces = new ArrayList<Face>();
-		this.corBase=corBase;
-		Boolean vert=true;
+		this.curvas = new ArrayList<Curva>();
+		this.corBase = corBase;
+		Boolean vert=true, face=false;
 		try{
 			File arq = new File(fname);
 			Scanner leitor = new Scanner(arq);
 			while(leitor.hasNextLine()){
 				String linha = leitor.nextLine();
-				if(linha.equals(";"))
+				if(linha.equals("f")){
+					face=true;
 					vert=false;
+				}
+				else if(linha.equals("c")){
+					face=vert=false;
+				}
 				else{
 					String tmp[] = linha.split(" ");
 					if(vert){
@@ -38,15 +51,22 @@ public class Objeto{
 						for(int i=0; i<tmp.length; i++)
 							num[i] = Double.parseDouble(tmp[i]);
 						Vertice v = new Vertice(num[0], num[1], num[2]);
-						v.setCor(corBase.copia());
+						v.setCor(corBase);
 						this.vertices.add(v);
 					}
-					else{
+					else if(face){
 						int ind[] = new int[tmp.length];
 						for(int i=0; i<tmp.length; i++)
 							ind[i] = Integer.parseInt(tmp[i]);
 						Face f = new Face(ind);
 						this.faces.add(f);
+					}
+					else{
+						int ind[] = new int[tmp.length];
+						for(int i=0; i<tmp.length; i++)
+							ind[i] = Integer.parseInt(tmp[i]);
+						Curva c = new Curva(ind);
+						this.curvas.add(c);
 					}
 				}
 			}
@@ -55,6 +75,7 @@ public class Objeto{
 		catch(Exception e){
 			System.out.println("Erro ao criar objeto:");
 			e.printStackTrace();
+			System.exit(1);
 		}
 	}
 	public void transforma(Matrix m, Vertice.CoordinateSystem in, Vertice.CoordinateSystem out){
@@ -67,7 +88,6 @@ public class Objeto{
 			while(iteratorVertice.hasNext()){
 				vertice = iteratorVertice.next();
 				v = vertice.verticeToArray(in);
-				//1==y do vertice
 				if(v[1]<min[1]){
 					for(int i=0;i<3;i++){
 						min[i]=v[i];
@@ -89,6 +109,11 @@ public class Objeto{
 			if(f.visivel())
 				f.desenha(g2d, this.vertices);
 		}
+		Iterator<Curva> ic = this.curvas.iterator();
+		while(ic.hasNext()){
+			Curva c = ic.next();
+			c.desenha(g2d,this.vertices);
+		}
 	}
 	public void mudaAnimacao(double duracao, Matrix transformacao){
 		double min[] = new double[3];
@@ -100,7 +125,6 @@ public class Objeto{
 			while(iteratorVertice.hasNext()){
 				vertice = iteratorVertice.next();
 				v = vertice.verticeToArray(Vertice.CoordinateSystem.CENA);
-				//1==y do vertice
 				if(v[1]<min[1]){
 					for(int i=0;i<3;i++){
 						min[i]=v[i];
@@ -117,7 +141,6 @@ public class Objeto{
 		}
 	}
 	public void anima(double t){
-		//if(this.endedAnimacao(t))return;
 		Iterator<Vertice> iteratorVertice = this.vertices.iterator();
 		while(iteratorVertice.hasNext()){
 			Vertice vertice = iteratorVertice.next();
@@ -136,20 +159,24 @@ public class Objeto{
 		}
 	}
 	public int[] painter(double observador[]){
-		double distFace[] = new double[this.faces.size()];
-		int ind[] = new int[this.faces.size()];
-		for(int i=0;i<ind.length;i++)
-			ind[i]=i;
-		Iterator<Face> iteratorFace = this.faces.iterator();
-		for(int i=0;iteratorFace.hasNext();i++){
-			Face f = iteratorFace.next();
-			double centroide[] = f.getCentroide(this.vertices);
-			distFace[i]=0;
-			for(int j=0;j<3;j++)
-				distFace[i]+=(centroide[j]-observador[j])*(centroide[j]-observador[j]);
+		if(this.faces.size()>0){
+			double distFace[] = new double[this.faces.size()];
+			int ind[] = new int[this.faces.size()];
+			for(int i=0;i<ind.length;i++)
+				ind[i]=i;
+			Iterator<Face> iteratorFace = this.faces.iterator();
+			for(int i=0;iteratorFace.hasNext();i++){
+				Face f = iteratorFace.next();
+				double centroide[] = f.getCentroide(this.vertices);
+				distFace[i]=0;
+				for(int j=0;j<3;j++)
+					distFace[i]+=(centroide[j]-observador[j])*(centroide[j]-observador[j]);
+			}
+			Sort.quickSort(distFace,ind);
+			return ind;
 		}
-		Sort.quickSort(distFace,ind);
-		return ind;
+		int v[] = {};
+		return v;
 	}
 	static private double abs(double x){
 		if(x>=0)return x;
@@ -197,7 +224,6 @@ public class Objeto{
 			double k[] = {0,0,1};
 			double tmp[] = this.vertices.get(i).verticeToArray(Vertice.CoordinateSystem.CENA);
 			double v[] = {tmp[0]/tmp[3],tmp[1]/tmp[3],tmp[2]/tmp[3]};
-			//System.out.println("L+"+100*abs(escalar(normalVertice[i],k)));
 			c.somaL(100*abs(escalar(normalVertice[i],k)));
 
 			this.vertices.get(i).setCor(c);

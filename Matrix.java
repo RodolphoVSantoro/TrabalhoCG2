@@ -5,7 +5,6 @@ import java.util.Scanner;
 import java.io.IOException;
 
 public class Matrix{
-	//[linha][coluna]
 	public double valores[][];
 	public Matrix(String fname){
 		this.valores = new double[4][4];
@@ -68,7 +67,6 @@ public class Matrix{
 				r[i] += this.valores[i][j]*v[j];
 		return r;
 	}
-	//pos multiplica this por m
 	public Matrix posMultiply(Matrix m){
 		Matrix r = new Matrix();
 		for(int i=0;i<4;i++)
@@ -77,7 +75,6 @@ public class Matrix{
 					r.valores[i][j] += this.valores[k][j]*m.get(i, k);
 		return r;
 	}
-	//pre multiplica this por m
 	public Matrix preMultiply(Matrix m){
 		Matrix r = new Matrix();
 		for(int i=0;i<4;i++)

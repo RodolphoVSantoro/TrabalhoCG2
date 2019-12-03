@@ -1,11 +1,9 @@
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.awt.*;
+import java.awt.Graphics2D;
 
 public class Cena{
 	private ArrayList<Objeto> objetos;
-	private Visibilidade visivibilidade;
-	private Shade shade;
 	private Matrix escalaTela;
 	private Matrix perspectiva;
 	private Matrix normaliza;
@@ -16,17 +14,18 @@ public class Cena{
 		this.larguraTela = larguraTela;
 		this.alturaTela = alturaTela;
 		this.escalaTela = CriaMatriz.Tela(larguraTela, alturaTela);
-		//this.escalaTela = CriaMatriz.Identidade();
 		this.perspectiva = CriaMatriz.Perspectiva(60, 80, 50);
 		this.normaliza = CriaMatriz.Normaliza(40.0,40.0);
-		//this.normaliza = CriaMatriz.Escala(1.0/60.0, 1/60.0, 0);
-		//X,Y e Z do observador no SRU
-		this.visivibilidade = new Visibilidade(observador[0], observador[1], observador[2]);
-		this.shade = new Shade(observador[0], observador[1], observador[2]);
 	}
 	//retorna id do objeto
 	public int adicionaObjeto(String fname, Cor corBase){
 		Objeto o = new Objeto(fname, corBase);
+		this.objetos.add(o);
+		return objetos.size()-1;
+	}
+
+	public int adicionaCurva(String fname){
+		Objeto o = new Objeto(fname);
 		this.objetos.add(o);
 		return objetos.size()-1;
 	}
